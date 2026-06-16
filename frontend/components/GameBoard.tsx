@@ -99,9 +99,9 @@ function Game({ user }: { user: User }) {
       </div>
 
       {/* Main */}
-      <div className="w-full h-full flex">
+      <div className="w-full h-full flex flex-col md:flex-row">
         {/* Grid */}
-        <div className="w-[80%] h-full overflow-y-auto py-10 flex justify-center">
+        <div className="w-full md:w-[80%] h-full overflow-y-auto py-10 flex justify-center">
           {isLoading ? (
             <div className="flex items-center justify-center w-full">
               <p className="text-zinc-400 text-sm">Loading grid...</p>
@@ -132,7 +132,7 @@ function Game({ user }: { user: User }) {
         </div>
 
         {/* Sidebar */}
-        <div className="w-[20%] border-l border-zinc-200 flex flex-col bg-white">
+        <div className="w-full md:w-[20%] border-l border-zinc-200 flex flex-col bg-white">
           <div className="px-4 py-3 border-b border-zinc-200">
             <p className="text-[11px] uppercase tracking-wider font-medium text-zinc-400">
               Leaderboard
