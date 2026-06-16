@@ -28,7 +28,7 @@ export interface LeaderboardEntry {
   cells: number; // ← this is what's missing
 }
 
-const API_URL = "http://localhost:5000";
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL!;
 const COOLDOWN_MS = 3000;
 
 export function useGrid(user: User) {
@@ -39,7 +39,6 @@ export function useGrid(user: User) {
   const [cooldownUntil, setCooldownUntil] = useState<number | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
 
-  // ── Load all cells on mount ──────────────────────────
   useEffect(() => {
     async function loadCells() {
       try {
@@ -63,9 +62,7 @@ export function useGrid(user: User) {
     loadLeaderboard();
   }, []);
 
-  // ── Socket event listeners ───────────────────────────
   useEffect(() => {
-    // Someone claimed a cell — update that one cell in state
     socket.on("cell_claimed", (event: CellClaimedEvent) => {
       setCells((prev) =>
         prev.map(
@@ -99,13 +96,10 @@ export function useGrid(user: User) {
     };
   }, [socket]);
 
-  // ── Claim a cell ─────────────────────────────────────
   const claimCell = useCallback(
     (cellId: number) => {
-      // Check cooldown on frontend too (feels more responsive)
       if (cooldownUntil && Date.now() < cooldownUntil) return;
 
-      // Emit to server
       socket.emit("claim_cell", {
         cellId,
         userId: user.id,
@@ -113,13 +107,11 @@ export function useGrid(user: User) {
         color: user.color,
       });
 
-      // Set cooldown
       setCooldownUntil(Date.now() + COOLDOWN_MS);
     },
     [socket, user, cooldownUntil],
   );
 
-  // ── Derived values ───────────────────────────────────
   const myCells = cells.filter((c) => c.ownerId === user.id).length;
 
   const isOnCooldown = cooldownUntil ? Date.now() < cooldownUntil : false;

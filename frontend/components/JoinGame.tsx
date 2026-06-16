@@ -16,15 +16,18 @@ function JoinGame() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/grid/join", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/grid/join`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username,
+          }),
         },
-        body: JSON.stringify({
-          username,
-        }),
-      });
+      );
       const data = await response.json();
       console.log(data);
       localStorage.setItem("user", JSON.stringify(data.data));
