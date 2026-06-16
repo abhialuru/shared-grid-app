@@ -1,0 +1,40 @@
+import { useEffect, useRef } from "react";
+import { io, Socket } from "socket.io-client";
+
+const SOCKET_URL = "http://localhost:5000";
+
+let socketInstance: Socket | null = null;
+
+// Singleton — one socket connection for whole app
+export function getSocket(): Socket {
+  if (!socketInstance) {
+    socketInstance = io(SOCKET_URL, {
+      transports: ["websocket"], // skip long-polling, go straight to WS
+    });
+  }
+  return socketInstance;
+}
+
+export function useSocket() {
+  const socketRef = useRef<Socket>(getSocket());
+
+  useEffect(() => {
+    const socket = socketRef.current;
+
+    socket.on("connect", () => {
+      console.log("⚡ Connected to server:", socket.id);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("❌ Disconnected from server");
+    });
+
+    // Cleanup only removes listeners, NOT the connection
+    return () => {
+      socket.off("connect");
+      socket.off("disconnect");
+    };
+  }, []);
+
+  return socketRef.current;
+}
