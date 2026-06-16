@@ -88,6 +88,10 @@ export function useGrid(user: User) {
       console.warn("Cooldown:", data.message);
     });
 
+    socket.on("leaderboard_update", (data: LeaderboardEntry[]) => {
+      setLeaderboard(data);
+    });
+
     return () => {
       socket.off("cell_claimed");
       socket.off("online_count");
